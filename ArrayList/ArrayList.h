@@ -13,10 +13,10 @@ public:
     bool empty();   // проверка списка на пустоту
     bool contains(T target);  // опрос наличия заданного значения
     T& getAt(int index); // чтение значения с заданным номером в списке 
-    void setAt(int index); // изменение значения с заданным номером в списке
+    void setAt(int index, T value); // изменение значения с заданным номером в списке
     int find(T target); // получение позиции в списке для заданного значения
     void add(T value);  // включение нового значения
-    void insert(T value, int index); // включение нового значения с заданным номером
+    void insert(int index, T value); // включение нового значения с заданным номером
     void print();
     void printFull();
 
@@ -107,6 +107,7 @@ bool ArrayList<T>::empty() {
     return size == 0;
 }
 
+// Чтение значения с заданным номеров в списке
 template <typename T>
 T &ArrayList<T>::getAt(int index) {
     if (index < 0 || index > size) throw std::out_of_range("Out of range");
@@ -118,6 +119,13 @@ T &ArrayList<T>::getAt(int index) {
         current = array[current].next;
     }
     return array[current].value;
+}
+
+// Именение значения с заданным номером в списке
+template <typename T>
+void ArrayList<T>::setAt(int index, T value) {
+    getAt(index) = value;
+
 }
 
 // Включение нового значения
