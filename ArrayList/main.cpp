@@ -12,6 +12,8 @@ int main() {
     list.add(10);
     list.add(4);
 
+    int get = list.getAt(2);
+
     list.print();
     list.printFull();
     return 0;

@@ -107,6 +107,19 @@ bool ArrayList<T>::empty() {
     return size == 0;
 }
 
+template <typename T>
+T &ArrayList<T>::getAt(int index) {
+    if (index < 0 || index > size) throw std::out_of_range("Out of range");
+    int current = head;
+    int j = 0;
+    while(j <= index) {
+        if(j == index) break;
+        ++j;
+        current = array[current].next;
+    }
+    return array[current].value;
+}
+
 // Включение нового значения
 template <typename T>
 void ArrayList<T>::add(T value) {
