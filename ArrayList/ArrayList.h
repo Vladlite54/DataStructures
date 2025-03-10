@@ -107,6 +107,12 @@ bool ArrayList<T>::empty() {
     return size == 0;
 }
 
+// Опрос наличия заданного значения
+template <typename T>
+bool ArrayList<T>::contains(T target) {
+    return find(target) != -1;
+}
+
 // Чтение значения с заданным номеров в списке
 template <typename T>
 T &ArrayList<T>::getAt(int index) {
@@ -126,6 +132,19 @@ template <typename T>
 void ArrayList<T>::setAt(int index, T value) {
     getAt(index) = value;
 
+}
+
+// Получение позиции в списке для заданного значения
+template <typename T>
+int ArrayList<T>::find(T target) {
+    int i = 0;
+    int current = head;
+    while(i < size) {
+        if (array[current].value == target) return current;
+        current = array[current].next;
+        ++i;
+    }
+    return -1;
 }
 
 // Включение нового значения

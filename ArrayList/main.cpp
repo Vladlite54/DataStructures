@@ -13,6 +13,8 @@ int main() {
     list.add(4);
 
     list.setAt(2, 101);
+    int find = list.find(102);
+    bool has = list.contains(102);
    
     list.print();
     list.printFull();
