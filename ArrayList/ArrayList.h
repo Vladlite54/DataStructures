@@ -11,6 +11,14 @@ public:
     int getSize(); // опрос размера списка
     void clear();   // очистка списка
     bool empty();   // проверка списка на пустоту
+    bool contains(T target);  // опрос наличия заданного значения
+    T& getAt(int index); // чтение значения с заданным номером в списке 
+    void setAt(int index); // изменение значения с заданным номером в списке
+    int find(T target); // получение позиции в списке для заданного значения
+    void add(T value);  // включение нового значения
+    void insert(T value, int index); // включение нового значения с заданным номером
+    void print();
+    void printFull();
 
     class iterator {
 
@@ -22,11 +30,11 @@ private:
         T value;    // значение в узле
         int next;   // индекс следующего узла
         int prev;   // индекс предыдущего узла
-        Node() : Node(T(), -1, -1) {};  // конструктор по умолчанию узла
-        Node(T value, int next, int prev) : next{-1}, prev{-1} { // конструктор узла
+        Node() : value{}, next{-1}, prev{-1} {};  // конструктор по умолчанию узла
+        Node(T value) { // конструктор узла
             this->value = value;
-            this->next = next;
-            this->prev = prev;
+            this->next = -1;
+            this->prev = -1;
         }
     };
 
@@ -51,6 +59,10 @@ ArrayList<T>::ArrayList(int capacity) {
     head = tail = -1;
     firstFree = 0;
     this->array = new Node[this->capacity];
+    for (int i = 0; i < capacity - 1; ++i) {
+        array[i].next = i + 1;
+    }
+    array[capacity - 1].next = -1;
 }
 
 // Конструктор копирования
@@ -75,22 +87,74 @@ int ArrayList<T>::getSize() {
     return size;
 }
 
+// Очистка списка
+template <typename T>
+void ArrayList<T>::clear()  {
+    head = tail = -1;
+    firstFree = size = 0;
+    for (int i = 0; i < capacity - 1; ++i) {
+        array[i].next = i + 1; 
+        array[i].prev = -1;
+        array[i] = T{};
+    }
+    array[capacity - 1].next = array[capacity - 1].prev = -1;
+    
+}
+
 // Проверка списка на пустоту
 template <typename T>
 bool ArrayList<T>::empty() {
     return size == 0;
 }
 
-///////////// ПРИВАТНЫЕ МЕТОДЫ /////////////
+// Включение нового значения
+template <typename T>
+void ArrayList<T>::add(T value) {
+    if (size == capacity) resize();
+    if (size == 0) {
+        head = tail = firstFree;
+        array[firstFree].value = value;
+    }
+    else {
+        array[firstFree].value = value;
+        array[firstFree].prev = tail;
+        tail = firstFree;
+    }
+    firstFree = array[firstFree].next;
+    ++size;
+}
 
 template <typename T>
+inline void ArrayList<T>::print() {
+    for(int i = head, j = 0; j < size; i = array[i].next, ++j) {
+        std::cout << array[i].value << " ";
+    }
+    std::cout << std::endl;
+}
+
+template <typename T>
+inline void ArrayList<T>::printFull() {
+    for(int i = 0; i < capacity; ++i) {
+        std::cout << array[i].value << " ";
+    }
+    std::cout << std::endl;
+}
+
+///////////// ПРИВАТНЫЕ МЕТОДЫ /////////////
+
+// Увеличить емкость списка
+template <typename T>
 void ArrayList<T>::resize() {
-    Node* newArr = new Node[capacity * 2];
-    for (int i = 0; i < capacity; i++) {
+    capacity = capacity * 2;
+    Node* newArr = new Node[capacity];
+    for (int i = 0; i < size; ++i) {
         newArr[i] = array[i];
     }
+    for (int i = size - 1; i < capacity - 1; ++i) {
+        newArr[i].next = i + 1;
+    }
+    firstFree = size;
     delete[] array;
     array = newArr;
-    capacity = capacity * 2;
 }
 
