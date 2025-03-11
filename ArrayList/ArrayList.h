@@ -22,11 +22,6 @@ public:
     void print();
     void printFull();
 
-    class iterator {
-
-    };
-
-
 private:
     struct Node {    // узел списка
         T value;    // значение в узле
@@ -48,6 +43,40 @@ private:
     int size;   // размер списка
 
     void resize();  // увеличить емкость списка
+
+public:
+class iterator {    // прямой итератор списка
+    public:
+        iterator(Node* &array, int index) { // конструктор итератора
+            listArray = array;
+            position = index;
+        }
+        T& operator*() {    // перегрузка оператора разыменования
+            return listArray[position].value;
+        }
+        iterator& operator++() {    // префиксный инкремент
+            position = listArray[position].next;
+            return *this;
+        }
+        iterator& operator--() {    // префиксный декремент
+            position = listArray[position].prev;
+            return *this;
+        }
+        bool operator==(const iterator &other) { return this->position == other.position; }   // оператор равенства
+        bool operator!=(const iterator &other) { return this->position != other.position; }   // оператор неравенства
+
+    private:
+        Node* listArray;
+        int position;
+    };
+
+    iterator begin() {  // запрос пряммого итератора
+        return iterator{array, head};
+    }
+
+    iterator end() {    // запрос прямого неустановленного итератора итератора
+        return iterator{array, -1};
+    }
 };
 
 ///////////// ПУБЛИЧНЫЕ МЕТОДЫ /////////////

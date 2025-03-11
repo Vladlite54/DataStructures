@@ -14,10 +14,13 @@ int main() {
     list.erase(1);
     
     
-    
-   
-
+    ArrayList<int>::iterator it = list.begin();
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << "\n";
   
+    list.clear();
    
     list.print();
     list.printFull();
