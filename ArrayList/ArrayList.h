@@ -17,7 +17,7 @@ public:
     int find(T target); // получение позиции в списке для заданного значения
     void add(T value);  // включение нового значения
     void insert(int index, T value); // включение нового значения с заданным номером
-    void erase(T value); // удаление заданного значения в списке
+    void erase(T target); // удаление заданного значения в списке
     void eraseAt(int index); // удаление значения с позиции с заданным номером
     void print();
     void printFull();
@@ -48,7 +48,6 @@ private:
     int size;   // размер списка
 
     void resize();  // увеличить емкость списка
-
 };
 
 ///////////// ПУБЛИЧНЫЕ МЕТОДЫ /////////////
@@ -100,7 +99,6 @@ void ArrayList<T>::clear()  {
         array[i] = T{};
     }
     array[capacity - 1].next = array[capacity - 1].prev = -1;
-    
 }
 
 // Проверка списка на пустоту
@@ -118,7 +116,7 @@ bool ArrayList<T>::contains(T target) {
 // Чтение значения с заданным номеров в списке
 template <typename T>
 T &ArrayList<T>::getAt(int index) {
-    if (index < 0 || index > size) throw std::out_of_range("Out of range");
+    if (index < 0 || index >= size) throw std::out_of_range("Out of range");
     int current = head;
     int j = 0;
     while(j <= index) {
@@ -133,7 +131,6 @@ T &ArrayList<T>::getAt(int index) {
 template <typename T>
 void ArrayList<T>::setAt(int index, T value) {
     getAt(index) = value;
-
 }
 
 // Получение позиции в списке для заданного значения
@@ -141,8 +138,8 @@ template <typename T>
 int ArrayList<T>::find(T target) {
     int i = 0;
     int current = head;
-    while(i < size) {
-        if (array[current].value == target) return current;
+    while(array[current].next != -1) {
+        if (array[current].value == target) return i;
         current = array[current].next;
         ++i;
     }
@@ -157,6 +154,7 @@ void ArrayList<T>::add(T value) {
     firstFree = array[firstFree].next;
     array[insertionIndex].value = value;
     array[insertionIndex].prev = tail;
+    array[insertionIndex].next = -1;
     if (tail != -1) array[tail].next = insertionIndex;
     if (head == -1) head = insertionIndex;
     tail = insertionIndex;
@@ -195,8 +193,59 @@ void ArrayList<T>::insert(int index, T value) {
     ++size;
 }
 
+// Удаление заданного значения в списке
 template <typename T>
-inline void ArrayList<T>::print() {
+void ArrayList<T>::erase(T target) {
+    while(true) {
+        int found = find(target);
+        if (found == -1) break;
+        eraseAt(found);
+    }
+}
+
+// Удаление значения с позиции с заданным номером
+template <typename T>
+void ArrayList<T>::eraseAt(int index) {
+    if (index < 0 || index >= size) throw std::out_of_range("Out of range");
+    int toDelete;
+    if (index == 0) {
+        toDelete = head;
+        if (tail != head) {
+            head = array[toDelete].next;
+            array[head].prev = -1;
+        }
+        else {
+            head = tail = -1;
+        }
+    }
+    else if (index == size - 1) {
+        toDelete = tail;
+        if (tail != head) {
+            tail = array[toDelete].prev;
+            array[tail].next = -1;
+        }
+        else {
+            head = tail = -1;
+        }
+    }
+    else {
+        toDelete = head;
+        for (int i = 0; i != index; ++i) {
+            toDelete = array[toDelete].next;
+        }
+        array[array[toDelete].prev].next = array[toDelete].next;
+        array[array[toDelete].next].prev = array[toDelete].prev;
+    }
+    array[toDelete] = T{};
+    int newFirstFree = toDelete;
+    array[toDelete].next = firstFree;
+    firstFree = newFirstFree;
+    --size;
+}
+
+template <typename T>
+inline void ArrayList<T>::print()
+{
     for(int i = head, j = 0; j < size; i = array[i].next, ++j) {
         std::cout << array[i].value << " ";
     }
@@ -228,4 +277,3 @@ void ArrayList<T>::resize() {
     delete[] array;
     array = newArr;
 }
-
