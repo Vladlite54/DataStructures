@@ -17,6 +17,8 @@ public:
     int find(T target); // получение позиции в списке для заданного значения
     void add(T value);  // включение нового значения
     void insert(int index, T value); // включение нового значения с заданным номером
+    void erase(T value); // удаление заданного значения в списке
+    void eraseAt(int index); // удаление значения с позиции с заданным номером
     void print();
     void printFull();
 
@@ -151,16 +153,45 @@ int ArrayList<T>::find(T target) {
 template <typename T>
 void ArrayList<T>::add(T value) {
     if (size == capacity) resize();
-    if (size == 0) {
-        head = tail = firstFree;
-        array[firstFree].value = value;
+    int insertionIndex = firstFree;
+    firstFree = array[firstFree].next;
+    array[insertionIndex].value = value;
+    array[insertionIndex].prev = tail;
+    if (tail != -1) array[tail].next = insertionIndex;
+    if (head == -1) head = insertionIndex;
+    tail = insertionIndex;
+    ++size;
+}
+
+// Включение нового значения с заданным номером
+template <typename T>
+void ArrayList<T>::insert(int index, T value) {
+    if(index < 0 || index > size) throw std::out_of_range("Out of range");
+    if (size == capacity) resize();
+    if (index == size) {
+        add(value);
+        return;
+    };
+    int insertIndex = firstFree;
+    firstFree = array[firstFree].next;
+    if (index == 0) {
+        array[insertIndex].value = value;
+        array[insertIndex].next = head;
+        if (head != -1) array[head].prev = insertIndex;
+        if(tail == -1) tail = insertIndex;
+        head = insertIndex;
     }
     else {
-        array[firstFree].value = value;
-        array[firstFree].prev = tail;
-        tail = firstFree;
+        array[insertIndex] = value;
+        int previous = head;
+        for (int i = 0; i < index - 1; ++i) {
+            previous = array[previous].next;
+        }
+        array[insertIndex].prev = previous;
+        array[insertIndex].next = array[previous].next;
+        array[array[previous].next].prev = insertIndex;
+        array[previous].next = insertIndex;
     }
-    firstFree = array[firstFree].next;
     ++size;
 }
 
@@ -190,7 +221,7 @@ void ArrayList<T>::resize() {
     for (int i = 0; i < size; ++i) {
         newArr[i] = array[i];
     }
-    for (int i = size - 1; i < capacity - 1; ++i) {
+    for (int i = size; i < capacity - 1; ++i) {
         newArr[i].next = i + 1;
     }
     firstFree = size;
