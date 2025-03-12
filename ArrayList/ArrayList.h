@@ -7,8 +7,10 @@ class ArrayList {
 public:
     ArrayList(int capacity = 16);    // конструктор списка
     ArrayList(const ArrayList<T> &other);  // конструктор копирования
+    ArrayList<T>& operator=(const ArrayList<T> &other); // оператор присваивания
     ~ArrayList();   // деструктор
     int getSize(); // опрос размера списка
+    int getCapacity();  // опром текущей емкости
     void clear();   // очистка списка
     bool empty();   // проверка списка на пустоту
     bool contains(T target);  // опрос наличия заданного значения
@@ -17,10 +19,10 @@ public:
     int find(T target); // получение позиции в списке для заданного значения
     void add(T value);  // включение нового значения
     void insert(int index, T value); // включение нового значения с заданным номером
-    void erase(T target); // удаление заданного значения в списке
+    bool erase(T target); // удаление заданного значения в списке
     void eraseAt(int index); // удаление значения с позиции с заданным номером
-    void print();
-    void printFull();
+    void print();   // вывод элементов списка
+    //void printFull();
 
 private:
     struct Node {    // узел списка
@@ -47,18 +49,25 @@ private:
 public:
 class iterator {    // прямой итератор списка
     public:
+        iterator() {    // конструктор по умочанию итератора
+            listArray = nullptr;
+            position = -1;
+        }
         iterator(Node* &array, int index) { // конструктор итератора
             listArray = array;
             position = index;
         }
         T& operator*() {    // перегрузка оператора разыменования
+            if (position < 0) throw std::runtime_error("Out of range");
             return listArray[position].value;
         }
         iterator& operator++() {    // префиксный инкремент
+            if (position < 0) throw std::out_of_range("Out of range");
             position = listArray[position].next;
             return *this;
         }
         iterator& operator--() {    // префиксный декремент
+            if (position < 0) throw std::out_of_range("Out of range");
             position = listArray[position].prev;
             return *this;
         }
@@ -84,6 +93,7 @@ class iterator {    // прямой итератор списка
 // Конструктор списка
 template <typename T>
 ArrayList<T>::ArrayList(int capacity) {
+    if (capacity <= 0) throw std::runtime_error("Incorrect capacity");
     this->capacity = capacity;
     size = 0;
     head = tail = -1;
@@ -99,10 +109,27 @@ ArrayList<T>::ArrayList(int capacity) {
 template <typename T>
 ArrayList<T>::ArrayList(const ArrayList<T> &other) : head{other.head}, tail{other.tail},
  firstFree{other.firstFree}, capacity{other.capacity}, size{other.size}  {
+    delete[] array;
     this->array = new Node[capacity];
     for (int i = 0; i < capacity; i++) {
         this->array[i] = other.array[i];
     }
+}
+
+// Оператор присваивания
+template <typename T>
+ArrayList<T> &ArrayList<T>::operator=(const ArrayList<T> &other) {
+    this->head = other.head;
+    this->tail = other.tail;
+    this->firstFree = other.firstFree;
+    this->capacity = other.capacity;
+    this->size = other.size;
+    delete[] array;
+    this->array = new Node[capacity];
+    for (int i = 0; i < capacity; i++) {
+        this->array[i] = other.array[i];
+    }
+    return *this;
 }
 
 // Деструктор списка
@@ -115,6 +142,12 @@ ArrayList<T>::~ArrayList()  {
 template <typename T>
 int ArrayList<T>::getSize() {    
     return size;
+}
+
+// Опрос текущей емкости
+template <typename T>
+int ArrayList<T>::getCapacity() {
+    return capacity;
 }
 
 // Очистка списка
@@ -167,7 +200,7 @@ template <typename T>
 int ArrayList<T>::find(T target) {
     int i = 0;
     int current = head;
-    while(array[current].next != -1) {
+    while(current != -1) {
         if (array[current].value == target) return i;
         current = array[current].next;
         ++i;
@@ -224,12 +257,16 @@ void ArrayList<T>::insert(int index, T value) {
 
 // Удаление заданного значения в списке
 template <typename T>
-void ArrayList<T>::erase(T target) {
+bool ArrayList<T>::erase(T target) {
+    int count = 0;
     while(true) {
         int found = find(target);
         if (found == -1) break;
         eraseAt(found);
+        count++;
     }
+    if (count == 0) return false;
+    else return true;
 }
 
 // Удаление значения с позиции с заданным номером
@@ -281,13 +318,13 @@ inline void ArrayList<T>::print()
     std::cout << std::endl;
 }
 
-template <typename T>
-inline void ArrayList<T>::printFull() {
-    for(int i = 0; i < capacity; ++i) {
-        std::cout << array[i].value << " ";
-    }
-    std::cout << std::endl;
-}
+// template <typename T>
+// inline void ArrayList<T>::printFull() {
+//     for(int i = 0; i < capacity; ++i) {
+//         std::cout << array[i].value << " ";
+//     }
+//     std::cout << std::endl;
+// }
 
 ///////////// ПРИВАТНЫЕ МЕТОДЫ /////////////
 
