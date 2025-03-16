@@ -15,14 +15,13 @@ public:
     bool empty();   // проверка списка на пустоту
     bool contains(T target);  // опрос наличия заданного значения
     T& getAt(int index); // чтение значения с заданным номером в списке 
-    void setAt(int index, T value); // изменение значения с заданным номером в списке
+    bool setAt(int index, T value); // изменение значения с заданным номером в списке 
     int find(T target); // получение позиции в списке для заданного значения
-    void add(T value);  // включение нового значения
-    void insert(int index, T value); // включение нового значения с заданным номером
+    bool add(T value);  // включение нового значения
+    bool insert(int index, T value); // включение нового значения с заданным номером
     bool erase(T target); // удаление заданного значения в списке
-    void eraseAt(int index); // удаление значения с позиции с заданным номером
+    bool eraseAt(int index); // удаление значения с позиции с заданным номером
     void print();   // вывод элементов списка
-    //void printFull();
 
 private:
     struct Node {    // узел списка
@@ -44,10 +43,8 @@ private:
     int capacity;   // емкость списка  
     int size;   // размер списка
 
-    void resize();  // увеличить емкость списка
-
 public:
-class iterator {    // прямой итератор списка
+    class iterator {    // прямой итератор списка
     public:
         iterator() {    // конструктор по умочанию итератора
             listArray = nullptr;
@@ -58,21 +55,21 @@ class iterator {    // прямой итератор списка
             position = index;
         }
         T& operator*() {    // перегрузка оператора разыменования
-            if (position < 0) throw std::runtime_error("Out of range");
+            if (position < 0) throw std::runtime_error("Exception: out of range");
             return listArray[position].value;
         }
         iterator& operator++() {    // префиксный инкремент
-            if (position < 0) throw std::out_of_range("Out of range");
+            if (position < 0) throw std::out_of_range("Exception: out of range");
             position = listArray[position].next;
             return *this;
         }
         iterator& operator--() {    // префиксный декремент
-            if (position < 0) throw std::out_of_range("Out of range");
+            if (position < 0) throw std::out_of_range("Exception: out of range");
             position = listArray[position].prev;
             return *this;
         }
-        bool operator==(const iterator &other) { return this->position == other.position; }   // оператор равенства
-        bool operator!=(const iterator &other) { return this->position != other.position; }   // оператор неравенства
+        bool operator==(const iterator &other) { return (this->listArray == other.listArray && this->position == other.position); }   // оператор равенства
+        bool operator!=(const iterator &other) { return !(this->listArray == other.listArray && this->position == other.position); }   // оператор неравенства
 
     private:
         Node* listArray;
@@ -93,7 +90,7 @@ class iterator {    // прямой итератор списка
 // Конструктор списка
 template <typename T>
 ArrayList<T>::ArrayList(int capacity) {
-    if (capacity <= 0) throw std::runtime_error("Incorrect capacity");
+    if (capacity <= 0) throw std::runtime_error("Excpetion: incorrect capacity");
     this->capacity = capacity;
     size = 0;
     head = tail = -1;
@@ -153,14 +150,9 @@ int ArrayList<T>::getCapacity() {
 // Очистка списка
 template <typename T>
 void ArrayList<T>::clear()  {
-    head = tail = -1;
-    firstFree = size = 0;
-    for (int i = 0; i < capacity - 1; ++i) {
-        array[i].next = i + 1; 
-        array[i].prev = -1;
-        array[i] = T{};
+    while (size) {
+        eraseAt(size - 1);
     }
-    array[capacity - 1].next = array[capacity - 1].prev = -1;
 }
 
 // Проверка списка на пустоту
@@ -178,7 +170,7 @@ bool ArrayList<T>::contains(T target) {
 // Чтение значения с заданным номеров в списке
 template <typename T>
 T &ArrayList<T>::getAt(int index) {
-    if (index < 0 || index >= size) throw std::out_of_range("Out of range");
+    if (index < 0 || index >= size) throw std::out_of_range("Exception: out of range");
     int current = head;
     int j = 0;
     while(j <= index) {
@@ -191,8 +183,14 @@ T &ArrayList<T>::getAt(int index) {
 
 // Именение значения с заданным номером в списке
 template <typename T>
-void ArrayList<T>::setAt(int index, T value) {
-    getAt(index) = value;
+bool ArrayList<T>::setAt(int index, T value) {
+    try {
+        getAt(index) = value;
+        return true;
+    }
+    catch (const std::exception &e) {
+        return false;
+    }
 }
 
 // Получение позиции в списке для заданного значения
@@ -210,27 +208,32 @@ int ArrayList<T>::find(T target) {
 
 // Включение нового значения
 template <typename T>
-void ArrayList<T>::add(T value) {
-    if (size == capacity) resize();
-    int insertionIndex = firstFree;
-    firstFree = array[firstFree].next;
-    array[insertionIndex].value = value;
-    array[insertionIndex].prev = tail;
-    array[insertionIndex].next = -1;
-    if (tail != -1) array[tail].next = insertionIndex;
-    if (head == -1) head = insertionIndex;
-    tail = insertionIndex;
-    ++size;
+bool ArrayList<T>::add(T value) {
+    try {
+        if (size == capacity) return false;
+        int insertionIndex = firstFree;
+        firstFree = array[firstFree].next;
+        array[insertionIndex].value = value;
+        array[insertionIndex].prev = tail;
+        array[insertionIndex].next = -1;
+        if (tail != -1) array[tail].next = insertionIndex;
+        if (head == -1) head = insertionIndex;
+        tail = insertionIndex;
+        ++size;
+        return true;
+    } catch (const std::exception &e) {
+        return false;
+    }
 }
 
 // Включение нового значения с заданным номером
 template <typename T>
-void ArrayList<T>::insert(int index, T value) {
-    if(index < 0 || index > size) throw std::out_of_range("Out of range");
-    if (size == capacity) resize();
+bool ArrayList<T>::insert(int index, T value) {
+    if(index < 0 || index > size) return false;
+    if (size == capacity) return false;
     if (index == size) {
         add(value);
-        return;
+        return true;
     };
     int insertIndex = firstFree;
     firstFree = array[firstFree].next;
@@ -253,26 +256,19 @@ void ArrayList<T>::insert(int index, T value) {
         array[previous].next = insertIndex;
     }
     ++size;
+    return true;
 }
 
 // Удаление заданного значения в списке
 template <typename T>
 bool ArrayList<T>::erase(T target) {
-    int count = 0;
-    while(true) {
-        int found = find(target);
-        if (found == -1) break;
-        eraseAt(found);
-        count++;
-    }
-    if (count == 0) return false;
-    else return true;
+    return eraseAt(find(target));
 }
 
 // Удаление значения с позиции с заданным номером
 template <typename T>
-void ArrayList<T>::eraseAt(int index) {
-    if (index < 0 || index >= size) throw std::out_of_range("Out of range");
+bool ArrayList<T>::eraseAt(int index) {
+    if (index < 0 || index >= size) return false;
     int toDelete;
     if (index == 0) {
         toDelete = head;
@@ -307,8 +303,10 @@ void ArrayList<T>::eraseAt(int index) {
     array[toDelete].next = firstFree;
     firstFree = newFirstFree;
     --size;
+    return true;
 }
 
+// Вывод элементов списка
 template <typename T>
 inline void ArrayList<T>::print()
 {
@@ -316,30 +314,4 @@ inline void ArrayList<T>::print()
         std::cout << array[i].value << " ";
     }
     std::cout << std::endl;
-}
-
-// template <typename T>
-// inline void ArrayList<T>::printFull() {
-//     for(int i = 0; i < capacity; ++i) {
-//         std::cout << array[i].value << " ";
-//     }
-//     std::cout << std::endl;
-// }
-
-///////////// ПРИВАТНЫЕ МЕТОДЫ /////////////
-
-// Увеличить емкость списка
-template <typename T>
-void ArrayList<T>::resize() {
-    capacity = capacity * 2;
-    Node* newArr = new Node[capacity];
-    for (int i = 0; i < size; ++i) {
-        newArr[i] = array[i];
-    }
-    for (int i = size; i < capacity - 1; ++i) {
-        newArr[i].next = i + 1;
-    }
-    firstFree = size;
-    delete[] array;
-    array = newArr;
 }

@@ -27,8 +27,8 @@ Menu::Menu() {
     "19) --iterator -> iterator decrement\n"
     "20) compare iterators == \n"
     "21) compare iterators != \n"
-    "22) get iterator value\n";
-
+    "22) get iterator value\n"
+    "23) set iterator value\n";
 }
 
 void Menu::start() {
@@ -89,15 +89,15 @@ void Menu::start() {
                 std::cout << "Enter position: " << std::endl;
                 std::cin >> position;
                 if (std::cin.fail()) break;
-                std::cout << "Element at position " << position << " is " << list.getAt(position) << std::endl;
+                result = list.getAt(position);
+                std::cout << "Element at position " << position << " is " << result << std::endl;
                 std::cout << "1\n";
                 break;
             case 8:
                 std::cout << "Enter position and element: ";
                 std::cin >> position >> element;
                 if (std::cin.fail()) break;
-                list.setAt(position, element);
-                std::cout << "1\n";
+                std::cout << list.setAt(position, element) << std::endl;
                 break;
             case 9:
                 std::cout << "Enter element you want to find: ";
@@ -117,15 +117,13 @@ void Menu::start() {
                 std::cout << "Enter element: ";
                 std::cin >> element;
                 if (std::cin.fail()) break;
-                list.add(element);
-                std::cout << "1\n";
+                std::cout << list.add(element) << std::endl;
                 break;
             case 11:
                 std::cout << "Enter position and element: ";
                 std::cin >> position >> element;
                 if (std::cin.fail()) break;
-                list.insert(position, element);;
-                std::cout << "1\n";
+                std::cout << list.insert(position, element) << std::endl;
                 break;
             case 12:
                 std::cout << "Enter element: ";
@@ -137,8 +135,7 @@ void Menu::start() {
                 std::cout << "Enter position: ";
                 std::cin >> position;
                 if (std::cin.fail()) break;
-                list.eraseAt(position);
-                std::cout << "1\n";
+                std::cout << list.eraseAt(position) << std::endl;
                 break;
             case 14:
                 list.print();
@@ -173,6 +170,12 @@ void Menu::start() {
                 break;
             case 22:
                 std::cout << "Iterator value: " << *it << std::endl;
+                std::cout << "1\n";
+                break;
+            case 23:
+                std::cout << "Enter value: ";
+                std::cin >> element;
+                *it = element;
                 std::cout << "1\n";
                 break;
             default:
