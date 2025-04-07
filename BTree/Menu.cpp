@@ -1,0 +1,32 @@
+#include "Menu.h"
+
+Menu::Menu() {
+    menuInfo =
+    "------ArrayList menu------\n"
+    "Operations:\n"
+    "-1) Exit menu\n"
+    "0) Show this menu\n"
+    "1) Constructor -> create list\n"
+    "2) Copy constructor -> copy old list to new list\n"
+    "3) getSize() -> get list size\n"
+    "4) clear() -> clear list\n"
+    "5) empty() -> is list empty?\n"
+    "6) contains(T target) -> check if list contains element\n"
+    "7) getAt(int index) -> get element at index\n"
+    "8) setAt(int index, T value) -> set value to element at index\n"
+    "9) find(T target) -> find target element\n"
+    "10) add(T value) -> add new value to list\n"
+    "11) insert(int index, T value) -> insert value to position in list\n"
+    "12) erase(T target) -> erase target value in list\n"
+    "13) eraseAt(int index) -> erase element at index\n"
+    "14) print() -> print list\n"
+    "15) getCapacity() -> get current capacity\n"
+    "16) begin() -> get iterator of begin\n"
+    "17) end() -> get iterator at end\n"
+    "18) ++iterator -> iterator increment\n"
+    "19) --iterator -> iterator decrement\n"
+    "20) compare iterators == \n"
+    "21) compare iterators != \n"
+    "22) get iterator value\n"
+    "23) set iterator value\n";
+}
