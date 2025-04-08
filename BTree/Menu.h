@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include "BTree.h"
+#include "BST.h"
 
 class Menu
 {

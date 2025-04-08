@@ -1,8 +1,9 @@
 #include <iostream>
 #include "Menu.h"
-#include "BTree.h"
 
 int main() {
-
+    
+    Menu app{};
+    app.start();
     return 0;
 }
