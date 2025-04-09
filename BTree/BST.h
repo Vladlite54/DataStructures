@@ -54,37 +54,37 @@ public:
     class Iterator;
     class ReverseIterator;
 
-    Iterator begin() const { return Iterator(findMin(root), root); }
-    Iterator end() const { return Iterator(nullptr, root); }
-    ReverseIterator rbegin() const { return ReverseIterator(findMax(root), root); }
-    ReverseIterator rend() const { return ReverseIterator(nullptr, root); }
+    Iterator begin() const { return Iterator(findMin(root), root); }    // получние прямого итератора на минимальный ключ
+    Iterator end() const { return Iterator(nullptr, root); }    // получение неустановленного прямого итератора
+    ReverseIterator rbegin() const { return ReverseIterator(findMax(root), root); } // получение обратного итреатора на макс ключ
+    ReverseIterator rend() const { return ReverseIterator(nullptr, root); } // получение обратного неустановленного итератора
 
     class Iterator {
     private:
-        Node* current;
-        Node* rootIt;
+        Node* current;  // текущей узел
+        Node* rootIt;   // указатель на корень
 
-        Node* findMaxIt(Node* node) const {
+        Node* findMaxIt(Node* node) const { // вспомогательная функция поиска максимального узла
             if (!node) return nullptr;
             while (node->right) node = node->right;
             return node;
         }
     
     public:
-        Iterator() : current(nullptr), rootIt(nullptr) {}
-        Iterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {}
+        Iterator() : current(nullptr), rootIt(nullptr) {}   // конкструктор по умолчанию
+        Iterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {} // конструктор
     
-        Data& operator*() const { 
+        Data& operator*() const { // получение значения 
             if (current == nullptr) throw std::out_of_range("Exception: out of range");
             return current->data; 
         }
 
-        Key getKey() const {
+        Key getKey() const {    // получение ключа
             if (current == nullptr) throw std::out_of_range("Exception: out of range"); 
             return current->key; 
         }
     
-        Iterator& operator++() {
+        Iterator& operator++() {    // префиксный инкремент
             if (current == nullptr) throw std::out_of_range("Exception: out of range");
 
             if (!current) return *this;
@@ -107,13 +107,13 @@ public:
             return *this;
         }
     
-        Iterator operator++(int) {
+        Iterator operator++(int) {  // постфиксный инкремент
             Iterator temp = *this;
             ++(*this);
             return temp;
         }
     
-        Iterator& operator--() {
+        Iterator& operator--() {    // префиксный декремент
             if (!current) {
                 // Для end() итератора переходим к максимальному элементу
                 current = findMaxIt(rootIt);
@@ -133,7 +133,7 @@ public:
             return *this;
         }
 
-        Iterator operator--(int) {
+        Iterator operator--(int) {  // постфикрсый декремент
             Iterator temp = *this;
             --(*this);
             return temp;
@@ -145,30 +145,30 @@ public:
     
     class ReverseIterator {
     private:
-        Node* current;
-        Node* rootIt;
+        Node* current;  // текущей узел
+        Node* rootIt;   // указатель на корень
 
-        Node* findMinIt(Node* node) const {
+        Node* findMinIt(Node* node) const { // вспомогательная функция поиска минимального узла
             if (!node) return nullptr;
             while (node->left) node = node->left;
             return node;
         }
 
     public:
-        ReverseIterator() : current(nullptr), rootIt(nullptr) {}
-        ReverseIterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {}
+        ReverseIterator() : current(nullptr), rootIt(nullptr) {}    // конструктор по умолчанию
+        ReverseIterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {}  // конструктор
 
-        Data& operator*() const {
+        Data& operator*() const {   // получение значения
             if (current == nullptr) throw std::out_of_range("Exception: out of range");
             return current->data; 
         }
 
-        Key getKey() const {
+        Key getKey() const {    // получение ключа
             if (current == nullptr) throw std::out_of_range("Exception: out of range");
             return current->key; 
         }
 
-        ReverseIterator& operator++() {
+        ReverseIterator& operator++() { // префиксный инкремент
             if (current == nullptr) throw std::out_of_range("Exception: out of range");
 
             if (!current) return *this;
@@ -191,13 +191,13 @@ public:
             return *this;
         }
 
-        ReverseIterator operator++(int) {
+        ReverseIterator operator++(int) {   // постфиксный инкремент
             ReverseIterator temp = *this;
             ++(*this);
             return temp;
         }
 
-        ReverseIterator& operator--() {
+        ReverseIterator& operator--() { // префиксный инкремент
             if (!current) {
                 // Для rend() итератора переходим к минимальному элементу
                 current = findMinIt(rootIt);
@@ -217,7 +217,7 @@ public:
             return *this;
         }
 
-        ReverseIterator operator--(int) {
+        ReverseIterator operator--(int) {   // постфиксный инкремент
             ReverseIterator temp = *this;
             --(*this);
             return temp;
