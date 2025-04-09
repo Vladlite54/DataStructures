@@ -17,27 +17,35 @@ Menu::Menu() {
     "9) Print tree\n"
     "10) Get keys in post-order (Lt → Rt → t)\n"
     "11) Merge with another tree\n"
-    "begin iterator\n"
-    "rbegin iterator\n"
-    "end iterator\n"
-    "rend iterator"
-    "++iterator\n"
-    "++riterator\n"
-    "--iterator\n"
-    "--riterator\n"
-    "compare iterators == \n"
-    "compare riterators == \n"
-    "compare iterators != \n"
-    "compare riterators != \n"
-    "get iterator value\n"
-    "get riterator value\n"
-    "set iterator value\n"
-    "set riterator value\n";
+    "12) iterator travesal\n"
+    "13) reverse iterator travesal\n"
+    "14) iterator begin\n"
+    "15) reverse iterator begin\n"
+    "16) end iterator\n"
+    "17) rend iterator\n"
+    "18) ++iterator\n"
+    "19) ++riterator\n"
+    "20) --iterator\n"
+    "21) --riterator\n"
+    "22) compare iterators == \n"
+    "23) compare riterators == \n"
+    "24) compare iterators != \n"
+    "25) compare riterators != \n"
+    "26) get iterator value\n"
+    "27) get riterator value\n"
+    "28) set iterator value\n"
+    "29) set riterator value\n";
 }
 
 void Menu::start() {
     BST<int, std::string> tree;
     BST<int, std::string> tree2;
+    BST<int, std::string> treeCopy;
+    BST<int, std::string>::Iterator iter;
+    BST<int, std::string>::Iterator iterCompare;
+    BST<int, std::string>::ReverseIterator riter;
+    BST<int, std::string>::ReverseIterator riterCompare;
+
     int choice;
     int key;
     std::string data;
@@ -55,6 +63,12 @@ void Menu::start() {
 
                 case 0:
                     std::cout << menuInfo << std::endl;
+                    break;
+                
+                case 1:
+                    treeCopy = tree;
+                    std::cout << "Tree copy:\n";
+                    treeCopy.print();
                     break;
 
                 case 2:
@@ -158,7 +172,141 @@ void Menu::start() {
                     }
                     break;
                 }
-                    
+
+                case 14:
+                    try {
+                        iter = tree.begin();
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+
+                case 15:
+                    try {
+                        riter = tree.rbegin();
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 16:
+                    iter = tree.end();
+                    std::cout << "1\n";
+                    break;
+                
+                case 17:
+                    riter = tree.rend();
+                    std::cout << "1\n";
+                    break;
+                
+                case 18:
+                    try {
+                        ++iter;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 19:
+                    try {
+                        ++riter;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 20:
+                    try {
+                        --iter;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 21:
+                    try {
+                        --riter;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 22:
+                    iterCompare = tree.begin();
+                    std::cout << (iter == iterCompare) << std::endl;
+                    break;
+                
+                case 23:
+                    riterCompare = tree.rbegin();
+                    std::cout << (riter == riterCompare) << std::endl;
+                    break;
+                
+                case 24:
+                    iterCompare = tree.begin();
+                    std::cout << (iter != iterCompare) << std::endl;
+                    break;
+                
+                case 25:
+                    riterCompare = tree.rbegin();
+                    std::cout << (riter != riterCompare) << std::endl;
+                    break;
+                
+                case 26:
+                    try {
+                        int key = iter.getKey();
+                        std::cout << "Key: " << key << ", Data: " << *iter << "\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 27:
+                    try {
+                        int key = riter.getKey();
+                        std::cout << "Key: " << key << ", Data: " << *riter << "\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 28:
+                    std::cout << "Enter value -> ";
+                    std::cin >> data;
+                    try {
+                        *iter = data;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
+                case 29:
+                    std::cout << "Enter value -> ";
+                    std::cin >> data;
+                    try {
+                        *riter = data;
+                        std::cout << "1\n";
+                    }
+                    catch(std::exception &e) {
+                        std::cout << "0\n";
+                    }
+                    break;
+                
                 default:
                     std::cout << "Invalid choice. Try again.\n";
             }

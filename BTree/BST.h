@@ -54,22 +54,39 @@ public:
     class Iterator;
     class ReverseIterator;
 
-    Iterator begin() const { return Iterator(findMin(root)); }
-    Iterator end() const { return Iterator(nullptr); }
-    ReverseIterator rbegin() const { return ReverseIterator(findMax(root)); }
-    ReverseIterator rend() const { return ReverseIterator(nullptr); }
+    Iterator begin() const { return Iterator(findMin(root), root); }
+    Iterator end() const { return Iterator(nullptr, root); }
+    ReverseIterator rbegin() const { return ReverseIterator(findMax(root), root); }
+    ReverseIterator rend() const { return ReverseIterator(nullptr, root); }
 
     class Iterator {
     private:
         Node* current;
+        Node* rootIt;
+
+        Node* findMaxIt(Node* node) const {
+            if (!node) return nullptr;
+            while (node->right) node = node->right;
+            return node;
+        }
     
     public:
-        Iterator(Node* node) : current(node) {}
+        Iterator() : current(nullptr), rootIt(nullptr) {}
+        Iterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {}
     
-        Data& operator*() const { return current->data; }
-        Key getKey() const { return current->key; }
+        Data& operator*() const { 
+            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+            return current->data; 
+        }
+
+        Key getKey() const {
+            if (current == nullptr) throw std::out_of_range("Exception: out of range"); 
+            return current->key; 
+        }
     
         Iterator& operator++() {
+            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+
             if (!current) return *this;
                 
             if (current->right) {
@@ -99,23 +116,13 @@ public:
         Iterator& operator--() {
             if (!current) {
                 // Для end() итератора переходим к максимальному элементу
-                current = root;
-                if (current) {
-                    while (current->right) {
-                        current = current->right;
-                    }
-                }
+                current = findMaxIt(rootIt);
                 return *this;
             }
-                
+            
             if (current->left) {
-                // Если есть левое поддерево, идем к его максимальному элементу
-                current = current->left;
-                while (current->right) {
-                    current = current->right;
-                }
+                current = findMaxIt(current->left);
             } else {
-                // Идем вверх до первого узла, который является правым потомком
                 Node* parent = current->parent;
                 while (parent && current == parent->left) {
                     current = parent;
@@ -125,7 +132,7 @@ public:
             }
             return *this;
         }
-    
+
         Iterator operator--(int) {
             Iterator temp = *this;
             --(*this);
@@ -139,14 +146,31 @@ public:
     class ReverseIterator {
     private:
         Node* current;
+        Node* rootIt;
+
+        Node* findMinIt(Node* node) const {
+            if (!node) return nullptr;
+            while (node->left) node = node->left;
+            return node;
+        }
 
     public:
-        ReverseIterator(Node* node) : current(node) {}
+        ReverseIterator() : current(nullptr), rootIt(nullptr) {}
+        ReverseIterator(Node* node, Node* root_node) : current(node), rootIt(root_node) {}
 
-        Data& operator*() const { return current->data; }
-        Key getKey() const { return current->key; }
+        Data& operator*() const {
+            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+            return current->data; 
+        }
+
+        Key getKey() const {
+            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+            return current->key; 
+        }
 
         ReverseIterator& operator++() {
+            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+
             if (!current) return *this;
             
             if (current->left) {
@@ -176,23 +200,13 @@ public:
         ReverseIterator& operator--() {
             if (!current) {
                 // Для rend() итератора переходим к минимальному элементу
-                current = root;
-                if (current) {
-                    while (current->left) {
-                        current = current->left;
-                    }
-                }
+                current = findMinIt(rootIt);
                 return *this;
             }
             
             if (current->right) {
-                // Если есть правое поддерево, идем к его минимальному элементу
-                current = current->right;
-                while (current->left) {
-                    current = current->left;
-                }
+                current = findMinIt(current->right);
             } else {
-                // Идем вверх до первого узла, который является левым потомком
                 Node* parent = current->parent;
                 while (parent && current == parent->right) {
                     current = parent;
