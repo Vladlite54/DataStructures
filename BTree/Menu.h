@@ -4,6 +4,7 @@
 #include <fstream>
 #include <limits>
 #include "BST.h"
+#include "Test.h"
 
 class Menu
 {

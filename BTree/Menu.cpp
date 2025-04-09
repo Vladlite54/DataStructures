@@ -34,7 +34,8 @@ Menu::Menu() {
     "26) get iterator value\n"
     "27) get riterator value\n"
     "28) set iterator value\n"
-    "29) set riterator value\n";
+    "29) set riterator value\n"
+    "30) Big O testing\n";
 }
 
 void Menu::start() {
@@ -304,6 +305,19 @@ void Menu::start() {
                     }
                     catch(std::exception &e) {
                         std::cout << "0\n";
+                    }
+                    break;
+                
+                case 30:
+                    std::cout << "Rand tree test: " << std::endl;
+                    for (int i = 500, j = 1; i <= 2500; i += 500, j++) {
+                        std::cout << "Iteration " << j << std::endl;
+                        test_rand(i);
+                    }
+                    std::cout << "Ord tree test: " << std::endl;
+                    for (int i = 500, j = 1; i <= 2500; i += 500, j++) {
+                        std::cout << "Iteration " << j << std::endl;
+                        test_ord(i);
                     }
                     break;
                 

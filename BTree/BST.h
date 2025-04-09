@@ -23,6 +23,7 @@ private:
 
     Node* root; // корень дерева
     size_t size;    // размер дерева
+    static int COUNTER; // счетчик просмотренных узлов
 
     // Вспомогательные функции
     void clear(Node* node); // очистка поддерева
@@ -49,6 +50,9 @@ public:
     std::vector<Key> getKeysPostOrder() const;  // получение списка ключей
     void merge(const BST& other);   // объединение деревьев
     void print() const { printTree(root, 0); } // печать всего дерева на экран
+    static void incrementCOUNTER();
+    static int getCOUNTER();
+    static void resetCOUNTER();
 
     // Итераторы
     class Iterator;
@@ -231,6 +235,9 @@ public:
 // Реализация методов BST
 
 template <typename Key, typename Data>
+int BST<Key, Data>::COUNTER = 0;
+
+template <typename Key, typename Data>
 BST<Key, Data>::BST(const BST& other) : root(nullptr), size(0) {
     root = copyTree(other.root, nullptr);
     size = other.size;
@@ -282,14 +289,20 @@ typename BST<Key, Data>::Node* BST<Key, Data>::copyTree(Node* node, Node* parent
 template <typename Key, typename Data>
 typename BST<Key, Data>::Node* BST<Key, Data>::findMin(Node* node) const {
     if (!node) return nullptr;
-    while (node->left) node = node->left;
+    while (node->left) {
+        incrementCOUNTER();
+        node = node->left;
+    }
     return node;
 }
 
 template <typename Key, typename Data>
 typename BST<Key, Data>::Node* BST<Key, Data>::findMax(Node* node) const {
     if (!node) return nullptr;
-    while (node->right) node = node->right;
+    while (node->right) {
+        incrementCOUNTER();
+        node = node->right;
+    }
     return node;
 }
 
@@ -314,6 +327,7 @@ Data& BST<Key, Data>::operator[](const Key& key) {
     Node* parent = nullptr;
     
     while (current) {
+        incrementCOUNTER();
         if (key == current->key) {
             return current->data;
         }
@@ -336,6 +350,7 @@ bool BST<Key, Data>::insert(const Key& key, const Data& data) {
     Node* parent = nullptr;
     
     while (current) {
+        incrementCOUNTER();
         if (key == current->key) {
             return false; // Ключ уже существует
         }
@@ -364,6 +379,7 @@ bool BST<Key, Data>::remove(const Key& key) {
     Node* current = root;
     
     while (current) {
+        incrementCOUNTER();
         if (key == current->key) break;
         current = (key < current->key) ? current->left : current->right;
     }
@@ -447,4 +463,19 @@ void BST<Key, Data>::mergeNodes(Node* node) {
 template <typename Key, typename Data>
 void BST<Key, Data>::merge(const BST& other) {
     mergeNodes(other.root);
+}
+
+template <typename Key, typename Data>
+inline void BST<Key, Data>::incrementCOUNTER() {
+    COUNTER++;
+}
+
+template <typename Key, typename Data>
+inline int BST<Key, Data>::getCOUNTER() {
+    return COUNTER;
+}
+
+template <typename Key, typename Data>
+inline void BST<Key, Data>::resetCOUNTER() {
+    COUNTER = 0;
 }
