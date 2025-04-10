@@ -58,21 +58,24 @@ void Menu::start() {
         
         try {
             switch (choice) {
-                case -1:
+                case -1: {
                     std::cout << "Exiting...\n";
                     break;
+                }
 
-                case 0:
+                case 0: {
                     std::cout << menuInfo << std::endl;
                     break;
-                
-                case 1:
+                }
+
+                case 1: {
                     treeCopy = tree;
                     std::cout << "Tree copy:\n";
                     treeCopy.print();
                     break;
+                }
 
-                case 2:
+                case 2: {
                     std::cout << "Enter key (integer): ";
                     std::cin >> key;
                     std::cout << "Enter data (string): ";
@@ -80,24 +83,28 @@ void Menu::start() {
                     std::getline(std::cin, data);
                     std::cout << tree.insert(key, data) << std::endl;
                     break;
-                    
-                case 3:
+                }
+
+                case 3: {
                     std::cout << "Enter key to remove: ";
                     std::cin >> key;
                     std::cout << tree.remove(key) << std::endl;
                     break;
-                    
-                case 4:
+                }
+
+                case 4: {
                     std::cout << "Enter key to access: ";
                     std::cin >> key;
                     try {
                         std::cout << tree[key] << std::endl;
                     } catch (const std::out_of_range& e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 5:
+                }
+
+                case 5: {
                     std::cout << "Enter key to set: ";
                     std::cin >> key;
                     try {
@@ -107,28 +114,34 @@ void Menu::start() {
                         tree[key] = data;
                         std::cout << "1\n";
                     } catch (const std::out_of_range& e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                    
-                case 6:
+                }
+
+                case 6: {
                     std::cout << tree.getSize() << std::endl;
                     break;
-                    
-                case 7:
+                }
+
+                case 7: {
                     std::cout << tree.isEmpty()  << std::endl;
                     break;
-                    
-                case 8:
+                }
+
+                case 8: {
                     tree.clear();
                     std::cout << "1\n";
                     break;
-                    
-                case 9:
+                }
+
+                case 9: {
                     std::cout << "Tree structure:\n";
                     tree.print();
                     break;
-                    
+                }
+
                 case 10: {
                     std::vector<int> keys = tree.getKeysPostOrder();
                     std::cout << "Keys in post-order: ";
@@ -154,7 +167,7 @@ void Menu::start() {
                         tree2.insert(key, data);
                     }
                     tree.merge(tree2);
-                    std::cout << "Trees merged successfully.\n";
+                    std::cout << "1\n";
                     break;
                 }
 
@@ -174,7 +187,7 @@ void Menu::start() {
                     break;
                 }
 
-                case 14:
+                case 14: {
                     try {
                         iter = tree.begin();
                         std::cout << "1\n";
@@ -183,8 +196,9 @@ void Menu::start() {
                         std::cout << "0\n";
                     }
                     break;
+                }
 
-                case 15:
+                case 15: {
                     try {
                         riter = tree.rbegin();
                         std::cout << "1\n";
@@ -193,98 +207,117 @@ void Menu::start() {
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 16:
+                }
+
+                case 16: {
                     iter = tree.end();
                     std::cout << "1\n";
                     break;
-                
-                case 17:
+                }
+
+                case 17: {
                     riter = tree.rend();
                     std::cout << "1\n";
                     break;
-                
-                case 18:
+                }
+
+                case 18: {
                     try {
                         ++iter;
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 19:
+                }
+
+                case 19: {
                     try {
                         ++riter;
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 20:
+                }
+
+                case 20: {
                     try {
                         --iter;
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 21:
+                }
+
+                case 21: {
                     try {
                         --riter;
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 22:
+                }
+
+                case 22: {
                     iterCompare = tree.begin();
                     std::cout << (iter == iterCompare) << std::endl;
                     break;
-                
-                case 23:
+                }
+
+                case 23: {
                     riterCompare = tree.rbegin();
                     std::cout << (riter == riterCompare) << std::endl;
                     break;
-                
-                case 24:
+                }
+
+                case 24: {
                     iterCompare = tree.begin();
                     std::cout << (iter != iterCompare) << std::endl;
                     break;
-                
-                case 25:
+                }
+
+                case 25: {
                     riterCompare = tree.rbegin();
                     std::cout << (riter != riterCompare) << std::endl;
                     break;
-                
-                case 26:
+                }
+
+                case 26: {
                     try {
                         int key = iter.getKey();
                         std::cout << "Key: " << key << ", Data: " << *iter << "\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 27:
+                }
+
+                case 27: {
                     try {
                         int key = riter.getKey();
                         std::cout << "Key: " << key << ", Data: " << *riter << "\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 28:
+                }
+
+                case 28: {
                     std::cout << "Enter value -> ";
                     std::cin >> data;
                     try {
@@ -292,11 +325,13 @@ void Menu::start() {
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 29:
+                }
+
+                case 29: {
                     std::cout << "Enter value -> ";
                     std::cin >> data;
                     try {
@@ -304,23 +339,26 @@ void Menu::start() {
                         std::cout << "1\n";
                     }
                     catch(std::exception &e) {
+                        std::cerr << e.what() << std::endl;
                         std::cout << "0\n";
                     }
                     break;
-                
-                case 30:
+                }
+
+                case 30: {
                     std::cout << "Rand tree test: " << std::endl;
-                    for (int i = 500, j = 1; i <= 2500; i += 500, j++) {
+                    for (int i = 5000, j = 1; i <= 5000; i += 500, j++) {
                         std::cout << "Iteration " << j << std::endl;
                         test_rand(i);
                     }
                     std::cout << "Ord tree test: " << std::endl;
-                    for (int i = 500, j = 1; i <= 2500; i += 500, j++) {
+                    for (int i = 5000, j = 1; i <= 5000; i += 500, j++) {
                         std::cout << "Iteration " << j << std::endl;
                         test_ord(i);
                     }
                     break;
-                
+                }
+
                 default:
                     std::cout << "Invalid choice. Try again.\n";
             }

@@ -70,6 +70,12 @@ public:
             while (node->right) node = node->right;
             return node;
         }
+
+        Node* findMinIt(Node* node) const { // вспомогательная функция поиска минимального узла
+            if (!node) return nullptr;
+            while (node->left) node = node->left;
+            return node;
+        }
     
     public:
         Iterator() : current(nullptr), rootIt(nullptr) {}   // конкструктор по умолчанию
@@ -86,7 +92,7 @@ public:
         }
     
         Iterator& operator++() {    // префиксный инкремент
-            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+            if (current == nullptr || rootIt == nullptr) throw std::out_of_range("Exception: out of range");
 
             if (!current) return *this;
                 
@@ -115,6 +121,8 @@ public:
         }
     
         Iterator& operator--() {    // префиксный декремент
+            if (current == findMinIt(rootIt) || rootIt == nullptr) throw std::out_of_range("Exception: out of range");
+
             if (!current) {
                 // Для end() итератора переходим к максимальному элементу
                 current = findMaxIt(rootIt);
@@ -149,6 +157,12 @@ public:
         Node* current;  // текущей узел
         Node* rootIt;   // указатель на корень
 
+        Node* findMaxIt(Node* node) const { // вспомогательная функция поиска максимального узла
+            if (!node) return nullptr;
+            while (node->right) node = node->right;
+            return node;
+        }
+
         Node* findMinIt(Node* node) const { // вспомогательная функция поиска минимального узла
             if (!node) return nullptr;
             while (node->left) node = node->left;
@@ -170,7 +184,7 @@ public:
         }
 
         ReverseIterator& operator++() { // префиксный инкремент
-            if (current == nullptr) throw std::out_of_range("Exception: out of range");
+            if (current == nullptr || rootIt == nullptr) throw std::out_of_range("Exception: out of range");
 
             if (!current) return *this;
             
@@ -199,6 +213,8 @@ public:
         }
 
         ReverseIterator& operator--() { // префиксный инкремент
+            if (current == findMaxIt(rootIt) || rootIt == nullptr) throw std::out_of_range("Exception: out of range");
+
             if (!current) {
                 // Для rend() итератора переходим к минимальному элементу
                 current = findMinIt(rootIt);
@@ -333,7 +349,7 @@ Data& BST<Key, Data>::operator[](const Key& key) {
         current = (key < current->key) ? current->left : current->right;
     }
     
-    throw std::out_of_range("Key not found");
+    throw std::out_of_range("Exception: Key not found");
 }
 
 template <typename Key, typename Data>
