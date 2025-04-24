@@ -7,7 +7,7 @@
 
 template <typename Key, typename Data>
 class BST {
-private:
+protected:
     struct Node {   // структура узла списка
         Key key;    // ключ
         Data data;  // данные

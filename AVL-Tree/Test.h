@@ -4,6 +4,7 @@
 #include <math.h>
 #include <iostream>
 #include "BST.h"
+#include "AVLTree.h"
 
 using namespace std;
 
@@ -19,3 +20,5 @@ void sRand();
 INT_64 LineRand();
 void test_rand(int n);
 void test_ord(int n);
+void test_rand_avl(int n);
+void test_ord_avl(int n);

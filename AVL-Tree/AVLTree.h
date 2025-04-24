@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <algorithm>
 
@@ -7,9 +9,16 @@ private:
     using Node = typename BST<Key, Data>::Node;
 
     // Вспомогательные методы для балансировки
+    // int getHeight(Node* node) const {
+    //     if (!node) return 0;
+    //     return std::max(getHeight(node->left), getHeight(node->right)) + 1;
+    // }
+
     int getHeight(Node* node) const {
         if (!node) return 0;
-        return std::max(getHeight(node->left), getHeight(node->right)) + 1;
+        int leftHeight = node->left ? getHeight(node->left) : 0;
+        int rightHeight = node->right ? getHeight(node->right) : 0;
+        return 1 + std::max(leftHeight, rightHeight);
     }
 
     int getBalanceFactor(Node* node) const {
@@ -90,7 +99,7 @@ private:
         std::vector<Node*> path; // Для хранения пути вставки
 
         while (current) {
-            BST<Key, Data>::incrementOperationCount();
+            BST<Key, Data>::incrementCOUNTER();
             parent = current;
             path.push_back(parent);
 
@@ -142,7 +151,7 @@ private:
 
         // Поиск узла для удаления
         while (current) {
-            BST<Key, Data>::incrementOperationCount();
+            BST<Key, Data>::incrementCOUNTER();
             if (key == current->key) break;
 
             parent = current;
@@ -188,7 +197,7 @@ private:
             path.push_back(successor);
 
             while (successor->left) {
-                BST<Key, Data>::incrementOperationCount();
+                BST<Key, Data>::incrementCOUNTER();
                 successorParent = successor;
                 successor = successor->left;
                 path.push_back(successor);
@@ -234,6 +243,21 @@ private:
         return true;
     }
 
+    void printTree(Node* node, int space) const {
+        if (!node) return;
+        
+        space += 5; 
+        
+        printTree(node->right, space);
+        
+        std::cout << std::endl;
+        for (int i = 4; i < space; i++) std::cout << " ";
+        
+        std::cout << node->key << "(" << getHeight(node) << ")" << "\n";
+        
+        printTree(node->left, space);
+    }
+
 public:
     AVLTree() : BST<Key, Data>() {}
     
@@ -246,5 +270,10 @@ public:
         return removeIterative(key);
     }
 
+    void print() const {
+        printTree(this->root, 0);
+    }
+
     // Используем реализацию operator[] из BST, так как он использует insert
+
 };

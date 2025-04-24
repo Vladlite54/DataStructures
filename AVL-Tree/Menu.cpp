@@ -39,13 +39,13 @@ Menu::Menu() {
 }
 
 void Menu::start() {
-    BST<int, std::string> tree;
-    BST<int, std::string> tree2;
-    BST<int, std::string> treeCopy;
-    BST<int, std::string>::Iterator iter;
-    BST<int, std::string>::Iterator iterCompare;
-    BST<int, std::string>::ReverseIterator riter;
-    BST<int, std::string>::ReverseIterator riterCompare;
+    AVLTree<int, std::string> tree;
+    AVLTree<int, std::string> tree2;
+    AVLTree<int, std::string> treeCopy;
+    AVLTree<int, std::string>::Iterator iter;
+    AVLTree<int, std::string>::Iterator iterCompare;
+    AVLTree<int, std::string>::ReverseIterator riter;
+    AVLTree<int, std::string>::ReverseIterator riterCompare;
 
     int choice;
     int key;
@@ -351,10 +351,20 @@ void Menu::start() {
                         std::cout << "Iteration " << j << std::endl;
                         test_rand(i);
                     }
+                    std::cout << "Rand avl-tree test: " << std::endl;
+                    for (int i = 5000, j = 1; i <= 5000; i += 500, j++) {
+                        std::cout << "Iteration " << j << std::endl;
+                        test_rand_avl(i);
+                    }
                     std::cout << "Ord tree test: " << std::endl;
                     for (int i = 5000, j = 1; i <= 5000; i += 500, j++) {
                         std::cout << "Iteration " << j << std::endl;
                         test_ord(i);
+                    }
+                    std::cout << "Ord avl-tree test: " << std::endl;
+                    for (int i = 5000, j = 1; i <= 5000; i += 500, j++) {
+                        std::cout << "Iteration " << j << std::endl;
+                        test_ord_avl(i);
                     }
                     break;
                 }
