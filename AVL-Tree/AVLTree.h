@@ -27,7 +27,7 @@ private:
         if (!node) return 0;
         int leftHeight = node->left ? static_cast<AVLNode*>(node->left)->height : 0;
         int rightHeight = node->right ? static_cast<AVLNode*>(node->right)->height : 0;
-        return leftHeight - rightHeight; // разность высоты левого и правого поддерева
+        return leftHeight - rightHeight; // разность высоты левого и правого узла
     }
 
     // Получить фактор балансировки (метод с модификатором const)
