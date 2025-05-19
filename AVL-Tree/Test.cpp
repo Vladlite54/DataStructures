@@ -249,7 +249,7 @@ void test_rand_avl(int n)
     //вывод размера дерева после теста
     cout << "items count: "<< tree.getSize() << endl;
     //теоретической оценки трудоёмкости операций BST
-    cout << "1.39*log2(n)= "<< 1.39 * (log((double)n) / log(2.0)) << endl;
+    cout << "log2(n)= "<< (log((double)n) / log(2.0)) + 0.25 << endl;
     //экспериментальной оценки трудоёмкости вставки
     cout << "Count insert: " << I / (n / 2) << endl;
     //экспериментальной оценки трудоёмкости удаления
@@ -334,7 +334,7 @@ void test_ord_avl(int n) {
     // вывод размера дерева после теста
     cout << "items count: " << tree.getSize() << endl;
     //теоретической оценки трудоёмкости операций BST
-    cout << "1.39*log2(n)= "<< 1.39 * (log((double)n) / log(2.0)) << endl;
+    cout << "log2(n)= "<< (log((double)n) / log(2.0)) + 0.25 << endl;
     //экспериментальной оценки трудоёмкости вставки
     cout << "Count insert: " << I / (n / 2) << endl;
     //экспериментальной оценки трудоёмкости удаления

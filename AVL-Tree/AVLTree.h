@@ -6,199 +6,223 @@
 template <typename Key, typename Data>
 class AVLTree : public BST<Key, Data> {
 private:
-    using Node = typename BST<Key, Data>::Node;
+    using typename BST<Key, Data>::Node;
+    
+    struct AVLNode : public Node {  // узел AVL-дерева
+        int height; // высота
+        
+        AVLNode(const Key& k, const Data& d) 
+            : Node(k, d), height(1) {}
+    };
 
-    // Вспомогательные методы для балансировки
-    // int getHeight(Node* node) const {
-    //     if (!node) return 0;
-    //     return std::max(getHeight(node->left), getHeight(node->right)) + 1;
-    // }
-
-    int getHeight(Node* node) const {
-        if (!node) return 0;
-        int leftHeight = node->left ? getHeight(node->left) : 0;
-        int rightHeight = node->right ? getHeight(node->right) : 0;
-        return 1 + std::max(leftHeight, rightHeight);
+    // Обновить высоту
+    void updateHeight(AVLNode* node) {  // обновить высоту
+        int leftHeight = node->left ? static_cast<AVLNode*>(node->left)->height : 0;
+        int rightHeight = node->right ? static_cast<AVLNode*>(node->right)->height : 0;
+        node->height = 1 + std::max(leftHeight, rightHeight);
     }
 
-    int getBalanceFactor(Node* node) const {
+    // Получить фактор балансировки
+    int getBalance(AVLNode* node) { 
         if (!node) return 0;
-        return getHeight(node->left) - getHeight(node->right);
+        int leftHeight = node->left ? static_cast<AVLNode*>(node->left)->height : 0;
+        int rightHeight = node->right ? static_cast<AVLNode*>(node->right)->height : 0;
+        return leftHeight - rightHeight; // разность высоты левого и правого поддерева
     }
 
-    Node* rotateRight(Node* y) {
+    // Получить фактор балансировки (метод с модификатором const)
+    int getBalance(AVLNode* node) const { 
+        if (!node) return 0;
+        int leftHeight = node->left ? static_cast<AVLNode*>(node->left)->height : 0;
+        int rightHeight = node->right ? static_cast<AVLNode*>(node->right)->height : 0;
+        return leftHeight - rightHeight;
+    }
+    
+    // Правый поворот
+    Node* rotateRight(Node* y) { 
+        BST<Key, Data>::incrementCOUNTER();
         Node* x = y->left;
-        Node* T2 = x->right;
-
-        // Выполняем поворот
-        x->right = y;
-        y->left = T2;
-
-        // Обновляем родительские указатели
+        y->left = x->right;
+        if (x->right) x->right->parent = y;
         x->parent = y->parent;
+        
+        if (!y->parent) {
+            this->root = x;
+        } else if (y == y->parent->left) {
+            y->parent->left = x;
+        } else {
+            y->parent->right = x;
+        }
+        
+        x->right = y;
         y->parent = x;
-        if (T2) T2->parent = y;
-
+        
+        updateHeight(static_cast<AVLNode*>(y));
+        updateHeight(static_cast<AVLNode*>(x));
+        
         return x;
     }
 
+    // Левый поворот
     Node* rotateLeft(Node* x) {
+        BST<Key, Data>::incrementCOUNTER();
         Node* y = x->right;
-        Node* T2 = y->left;
-
-        // Выполняем поворот
-        y->left = x;
-        x->right = T2;
-
-        // Обновляем родительские указатели
+        x->right = y->left;
+        if (y->left) y->left->parent = x;
         y->parent = x->parent;
+        
+        if (!x->parent) {
+            this->root = y;
+        } else if (x == x->parent->left) {
+            x->parent->left = y;
+        } else {
+            x->parent->right = y;
+        }
+        
+        y->left = x;
         x->parent = y;
-        if (T2) T2->parent = x;
-
+        
+        updateHeight(static_cast<AVLNode*>(x));
+        updateHeight(static_cast<AVLNode*>(y));
+        
         return y;
     }
 
-    Node* balance(Node* node) {
-        if (!node) return nullptr;
+    // Балансировка дерева
+    void rebalance(Node* node) {
+        if (!node) return;
+        
+        AVLNode* avlNode = static_cast<AVLNode*>(node);
+        updateHeight(avlNode);
+        int balance = getBalance(avlNode);
 
-        int balanceFactor = getBalanceFactor(node);
-
-        // Left Left Case
-        if (balanceFactor > 1 && getBalanceFactor(node->left) >= 0)
-            return rotateRight(node);
-
-        // Right Right Case
-        if (balanceFactor < -1 && getBalanceFactor(node->right) <= 0)
-            return rotateLeft(node);
-
-        // Left Right Case
-        if (balanceFactor > 1 && getBalanceFactor(node->left) < 0) {
-            node->left = rotateLeft(node->left);
-            return rotateRight(node);
+        // условие для LL-поворота
+        if (balance > 1 && getBalance(static_cast<AVLNode*>(avlNode->left)) >= 0) {
+            if (node == this->root) {
+                this->root = rotateRight(node);
+            } else {
+                rotateRight(node);
+            }
+            return;
         }
 
-        // Right Left Case
-        if (balanceFactor < -1 && getBalanceFactor(node->right) > 0) {
-            node->right = rotateRight(node->right);
-            return rotateLeft(node);
+        // условие для RR-поворота
+        if (balance < -1 && getBalance(static_cast<AVLNode*>(avlNode->right)) <= 0) {
+            if (node == this->root) {
+                this->root = rotateLeft(node);
+            } else {
+                rotateLeft(node);
+            }
+            return;
         }
 
-        return node;
+        // условие для LR-поворота
+        if (balance > 1 && getBalance(static_cast<AVLNode*>(avlNode->left)) < 0) {
+            avlNode->left = rotateLeft(avlNode->left);
+            if (node == this->root) {
+                this->root = rotateRight(node);
+            } else {
+                rotateRight(node);
+            }
+            return;
+        }
+
+        // условие для RL-поворота
+        if (balance < -1 && getBalance(static_cast<AVLNode*>(avlNode->right)) > 0) {
+            avlNode->right = rotateRight(avlNode->right);
+            if (node == this->root) {
+                this->root = rotateLeft(node);
+            } else {
+                rotateLeft(node);
+            }
+            return;
+        }
     }
 
-    // Итеративная вставка с балансировкой
-    bool insertIterative(const Key& key, const Data& data) {
-        if (!this->root) {
-            this->root = new Node(key, data);
-            this->size++;
-            return true;
-        }
+public:
+    AVLTree() : BST<Key, Data>() {}
 
+    // Вставка
+    bool insert(const Key& key, const Data& data) override {
+        std::vector<Node*> path;
         Node* current = this->root;
         Node* parent = nullptr;
-        std::vector<Node*> path; // Для хранения пути вставки
 
+        // поиск места для вставки
         while (current) {
             BST<Key, Data>::incrementCOUNTER();
-            parent = current;
-            path.push_back(parent);
-
+            path.push_back(current);
             if (key == current->key) {
-                return false; // Ключ уже существует
+                return false;
             }
-
+            parent = current;
             current = (key < current->key) ? current->left : current->right;
         }
 
-        Node* newNode = new Node(key, data);
+        // создание нового узла
+        Node* newNode = new AVLNode(key, data);
         newNode->parent = parent;
-
-        if (key < parent->key) {
+        
+        if (!parent) {
+            this->root = newNode;
+        } else if (key < parent->key) {
             parent->left = newNode;
         } else {
             parent->right = newNode;
         }
 
         this->size++;
+        path.push_back(newNode);
 
-        // Балансировка вдоль пути вставки
-        for (int i = path.size() - 1; i >= 0; --i) {
-            Node* node = path[i];
-            Node* balanced = balance(node);
-
-            if (balanced != node) {
-                if (i == 0) {
-                    this->root = balanced;
-                } else {
-                    Node* parent = path[i-1];
-                    if (parent->left == node) {
-                        parent->left = balanced;
-                    } else {
-                        parent->right = balanced;
-                    }
-                }
-            }
+        // балансировка
+        for (auto it = path.rbegin(); it != path.rend(); ++it) {
+            rebalance(*it);
         }
 
         return true;
     }
 
-    // Итеративное удаление с балансировкой
-    bool removeIterative(const Key& key) {
+    // удаление
+    bool remove(const Key& key) override {
+        std::vector<Node*> path;
         Node* current = this->root;
         Node* parent = nullptr;
-        std::vector<Node*> path; // Для хранения пути удаления
 
-        // Поиск узла для удаления
-        while (current) {
+        // поиск узла для удаления
+        while (current && current->key != key) {
             BST<Key, Data>::incrementCOUNTER();
-            if (key == current->key) break;
-
+            path.push_back(current);
             parent = current;
-            path.push_back(parent);
             current = (key < current->key) ? current->left : current->right;
         }
 
-        if (!current) return false; // Ключ не найден
+        if (!current) return false;
 
-        path.push_back(current);
+        path.push_back(current); // добавляем узел для удаления в путь
 
-        if (!current->left && !current->right) {
-            // Нет потомков
-            if (parent) {
-                if (parent->left == current) {
-                    parent->left = nullptr;
-                } else {
-                    parent->right = nullptr;
-                }
-            } else {
-                this->root = nullptr;
-            }
-            delete current;
-        } else if (!current->left || !current->right) {
-            // Один потомок
+        // удаление узла
+        if (!current->left || !current->right) {
             Node* child = current->left ? current->left : current->right;
-            if (parent) {
-                if (parent->left == current) {
-                    parent->left = child;
-                } else {
-                    parent->right = child;
-                }
-                child->parent = parent;
-            } else {
+            
+            if (!parent) {
                 this->root = child;
-                child->parent = nullptr;
+            } else if (current == parent->left) {
+                parent->left = child;
+            } else {
+                parent->right = child;
             }
+            
+            if (child) child->parent = parent;
             delete current;
         } else {
-            // Два потомка
+            // у узла два потомка
             Node* successor = current->right;
-            Node* successorParent = current;
+            parent = current;
             path.push_back(successor);
-
+            
             while (successor->left) {
                 BST<Key, Data>::incrementCOUNTER();
-                successorParent = successor;
+                parent = successor;
                 successor = successor->left;
                 path.push_back(successor);
             }
@@ -206,74 +230,50 @@ private:
             current->key = successor->key;
             current->data = successor->data;
 
-            if (successorParent->left == successor) {
-                successorParent->left = successor->right;
+            if (parent->left == successor) {
+                parent->left = successor->right;
             } else {
-                successorParent->right = successor->right;
+                parent->right = successor->right;
             }
-
+            
             if (successor->right) {
-                successor->right->parent = successorParent;
+                successor->right->parent = parent;
             }
-
+            
             delete successor;
         }
 
         this->size--;
 
-        // Балансировка вдоль пути удаления
-        for (int i = path.size() - 1; i >= 0; --i) {
-            Node* node = path[i];
-            Node* balanced = balance(node);
-
-            if (balanced != node) {
-                if (i == 0) {
-                    this->root = balanced;
-                } else {
-                    Node* parent = path[i-1];
-                    if (parent->left == node) {
-                        parent->left = balanced;
-                    } else {
-                        parent->right = balanced;
-                    }
-                }
-            }
+        // балансировка
+        for (auto it = path.rbegin(); it != path.rend(); ++it) {
+            rebalance(*it);
         }
 
         return true;
     }
 
-    void printTree(Node* node, int space) const {
+    void print() const {
+        printTree(static_cast<AVLNode*>(this->root), 0);
+    }
+
+private:
+    // Вывод дерева на экран
+    void printTree(AVLNode* node, int space) const {
         if (!node) return;
+        space += 4;
         
-        space += 5; 
+        // правое поддерево
+        printTree(static_cast<AVLNode*>(node->right), space);
         
-        printTree(node->right, space);
-        
+        // вывод текущего узла с фактором баланса
         std::cout << std::endl;
         for (int i = 4; i < space; i++) std::cout << " ";
         
-        std::cout << node->key << "(" << getHeight(node) << ")" << "\n";
+        int balance = getBalance(node);
+        std::cout << node->key << "[" << balance << "]" << "\n";
         
-        printTree(node->left, space);
+        // левое поддерево
+        printTree(static_cast<AVLNode*>(node->left), space);
     }
-
-public:
-    AVLTree() : BST<Key, Data>() {}
-    
-    // Переопределяем методы вставки и удаления
-    bool insert(const Key& key, const Data& data) override {
-        return insertIterative(key, data);
-    }
-
-    bool remove(const Key& key) override {
-        return removeIterative(key);
-    }
-
-    void print() const {
-        printTree(this->root, 0);
-    }
-
-    // Используем реализацию operator[] из BST, так как он использует insert
-
 };
